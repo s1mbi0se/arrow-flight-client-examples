@@ -17,8 +17,6 @@
 
 package com.adhoc.flight.sql;
 
-import java.io.IOException;
-
 import org.apache.arrow.flight.CallOption;
 import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.flight.Location;
@@ -41,7 +39,7 @@ import org.apache.commons.cli.ParseException;
  */
 public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
 
-  public static void main(final String[] args) {
+  public static void main(final String[] args) throws Exception {
     DremioFlightSqlClientDemoApp thisApp = new DremioFlightSqlClientDemoApp();
 
     thisApp.addRequiredOption("host", "Host to connect to");
@@ -66,9 +64,7 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
     } catch (final ParseException e) {
       System.out.println(e.getMessage());
       formatter.printHelp("DremioFlightSqlClientDemoApp -host localhost -port 32010 ...", thisApp.options);
-      System.exit(1);
-    } catch (final IOException e) {
-      e.printStackTrace();
+      throw e;
     }
   }
 
@@ -101,11 +97,15 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
    *
    * @param cmd Parsed {@link CommandLine}; often the result of {@link DefaultParser#parse(Options, String[])}.
    */
-  public void executeApp(CommandLine cmd) throws IOException {
+  public void executeApp(CommandLine cmd) throws Exception {
     createFlightSqlClient(
         cmd.getOptionValue("host").trim(), cmd.getOptionValue("port").trim(),
         cmd.getOptionValue("username").trim(), cmd.getOptionValue("password").trim());
-    executeCommand(cmd);
+    try {
+      executeCommand(cmd);
+    } finally {
+      flightSqlClient.close();
+    }
   }
 
   /**
