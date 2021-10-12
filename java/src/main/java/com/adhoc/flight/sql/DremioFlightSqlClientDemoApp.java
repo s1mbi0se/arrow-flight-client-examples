@@ -40,30 +40,31 @@ import org.apache.commons.cli.ParseException;
 public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
 
   public static void main(final String[] args) throws Exception {
-    DremioFlightSqlClientDemoApp thisApp = new DremioFlightSqlClientDemoApp();
+    final Options options = new Options();
 
-    thisApp.addRequiredOption("host", "Host to connect to");
-    thisApp.addRequiredOption("port", "Port to connect to");
-    thisApp.addRequiredOption("command", "Method to run");
-    thisApp.addRequiredOption("username", "Auth username");
-    thisApp.addRequiredOption("password", "Auth password");
+    options.addRequiredOption("host", "host", true, "Host to connect to");
+    options.addRequiredOption("port", "port", true, "Port to connect to");
+    options.addRequiredOption("command", "command", true, "Method to run");
+    options.addRequiredOption("username", "username", true, "Auth username");
+    options.addRequiredOption("password", "password", true, "Auth password");
 
-    thisApp.addOptionalOption("query", "Query");
-    thisApp.addOptionalOption("catalog", "Catalog");
-    thisApp.addOptionalOption("schema", "Schema");
-    thisApp.addOptionalOption("table", "Table");
+    options.addOption("query", "query", true, "Query");
+    options.addOption("catalog", "catalog", true, "Catalog");
+    options.addOption("schema", "schema", true, "Schema");
+    options.addOption("table", "table", true, "Table");
 
     CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     CommandLine cmd;
 
     try {
-      cmd = parser.parse(thisApp.options, args);
+      cmd = parser.parse(options, args);
+      DremioFlightSqlClientDemoApp thisApp = new DremioFlightSqlClientDemoApp();
       thisApp.executeApp(cmd);
 
     } catch (final ParseException e) {
       System.out.println(e.getMessage());
-      formatter.printHelp("DremioFlightSqlClientDemoApp -host localhost -port 32010 ...", thisApp.options);
+      formatter.printHelp("DremioFlightSqlClientDemoApp -host localhost -port 32010 ...", options);
       throw e;
     }
   }
@@ -101,11 +102,7 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
     createFlightSqlClient(
         cmd.getOptionValue("host").trim(), cmd.getOptionValue("port").trim(),
         cmd.getOptionValue("username").trim(), cmd.getOptionValue("password").trim());
-    try {
-      executeCommand(cmd);
-    } finally {
-      flightSqlClient.close();
-    }
+    executeCommand(cmd);
   }
 
   /**
