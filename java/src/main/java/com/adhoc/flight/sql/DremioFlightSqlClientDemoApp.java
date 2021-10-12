@@ -76,25 +76,11 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
     }
   }
 
-  @Override
-  public CallOption[] getCallOptions() {
-    return super.getCallOptions();
-  }
-
   /**
    * Adds a {@link CallOption} to the current array.
    */
   public void addCallOption(final CallOption optionToAdd) {
     callOptions.add(optionToAdd);
-  }
-
-  /**
-   * Gets the current {@link BufferAllocator}.
-   *
-   * @return current {@link BufferAllocator}.
-   */
-  public BufferAllocator getAllocator() {
-    return allocator;
   }
 
   /**
@@ -124,7 +110,7 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
     final ClientIncomingAuthHeaderMiddleware.Factory factory =
         new ClientIncomingAuthHeaderMiddleware.Factory(new ClientBearerHeaderHandler());
     final FlightClient client = FlightClient.builder()
-        .allocator(getAllocator())
+        .allocator(allocator)
         .location(Location.forGrpcInsecure(host, Integer.parseInt(port)))
         .intercept(factory)
         .build();
