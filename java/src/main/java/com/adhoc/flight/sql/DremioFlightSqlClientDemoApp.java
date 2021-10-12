@@ -27,6 +27,7 @@ import org.apache.arrow.flight.grpc.CredentialCallOption;
 import org.apache.arrow.flight.sql.FlightSqlClient;
 import org.apache.arrow.flight.sql.example.FlightSqlClientDemoApp;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.RootAllocator;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -38,6 +39,10 @@ import org.apache.commons.cli.ParseException;
  * Dremio's Flight SQL Client Demo CLI Application.
  */
 public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
+
+  public DremioFlightSqlClientDemoApp(BufferAllocator bufferAllocator) {
+    super(bufferAllocator);
+  }
 
   public static void main(final String[] args) throws Exception {
     final Options options = new Options();
@@ -59,8 +64,10 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
 
     try {
       cmd = parser.parse(options, args);
-      DremioFlightSqlClientDemoApp thisApp = new DremioFlightSqlClientDemoApp();
-      thisApp.executeApp(cmd);
+      try (final DremioFlightSqlClientDemoApp thisApp = new DremioFlightSqlClientDemoApp(
+          new RootAllocator(Integer.MAX_VALUE))) {
+        thisApp.executeApp(cmd);
+      }
 
     } catch (final ParseException e) {
       System.out.println(e.getMessage());
