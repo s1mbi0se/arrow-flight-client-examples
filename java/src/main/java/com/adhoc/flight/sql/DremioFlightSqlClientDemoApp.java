@@ -77,7 +77,7 @@ public class DremioFlightSqlClientDemoApp extends FlightSqlClientDemoApp {
   }
 
   /**
-   * Adds a {@link CallOption} to the current array.
+   * Adds a {@link CallOption} to the current {@code callOptions} array.
    */
   public void addCallOption(final CallOption optionToAdd) {
     callOptions.add(optionToAdd);
